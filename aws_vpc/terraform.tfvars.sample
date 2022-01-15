@@ -1,32 +1,32 @@
 cluster_subnet = {
   0 = {
-    availability_zone = "us-east-2a"
-    cidr_block        = "10.0.2.0/28"
+    availability_zone_id = "use2-az1"
+    cidr_block           = "10.0.2.0/28"
   },
   1 = {
-    availability_zone = "us-east-2b"
-    cidr_block        = "10.0.2.16/28"
+    availability_zone_id = "use2-az2"
+    cidr_block           = "10.0.2.16/28"
   }
 }
 identifier = "larkintuckerllc"
 private_subnet = {
   0 = {
-    availability_zone = "us-east-2a"
-    cidr_block        = "240.0.0.0/17"
+    availability_zone_id = "use2-az1"
+    cidr_block           = "240.0.0.0/17"
   },
   1 = {
-    availability_zone = "us-east-2b"
-    cidr_block        = "240.0.128.0/17"
+    availability_zone_id = "use2-az2"
+    cidr_block           = "240.0.128.0/17"
   }
 }
 public_subnet = {
   0 = {
-    availability_zone = "us-east-2a"
-    cidr_block        = "10.0.0.0/24"
+    availability_zone_id = "use2-az1"
+    cidr_block           = "10.0.0.0/24"
   },
   1 = {
-    availability_zone = "us-east-2b"
-    cidr_block        = "10.0.1.0/24"
+    availability_zone_id = "use2-az2"
+    cidr_block           = "10.0.1.0/24"
   }
 }
 region                   = "us-east-2"

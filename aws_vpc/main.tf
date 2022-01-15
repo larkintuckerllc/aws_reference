@@ -36,40 +36,40 @@ resource "aws_vpc_ipv4_cidr_block_association" "this" {
 # SUBNETS
 
 resource "aws_subnet" "cluster" {
-  for_each          = var.cluster_subnet
-  availability_zone = each.value["availability_zone"]
-  cidr_block        = each.value["cidr_block"]
+  for_each             = var.cluster_subnet
+  availability_zone_id = each.value["availability_zone_id"]
+  cidr_block           = each.value["cidr_block"]
   tags = {
-    Infrastructure                            = var.identifier
-    Name                                      = "${var.identifier}-cluster-${each.key}"
-    Tier                                      = "private"
+    Infrastructure  = var.identifier
+    Name            = "${var.identifier}-cluster-${each.key}"
+    Tier            = "private"
   }
   vpc_id = aws_vpc.this.id
 }
 
 resource "aws_subnet" "private" {
-  for_each          = var.private_subnet
-  availability_zone = each.value["availability_zone"]
-  cidr_block        = each.value["cidr_block"]
+  for_each             = var.private_subnet
+  availability_zone_id = each.value["availability_zone_id"]
+  cidr_block           = each.value["cidr_block"]
   tags = {
-    Infrastructure                            = var.identifier
-    Name                                      = "${var.identifier}-private-${each.key}"
-    "kubernetes.io/role/internal-elb"         = "1"
-    Tier                                      = "private"
+    Infrastructure                    = var.identifier
+    Name                              = "${var.identifier}-private-${each.key}"
+    "kubernetes.io/role/internal-elb" = "1"
+    Tier                              = "private"
   }
   vpc_id = aws_vpc.this.id
 }
 
 resource "aws_subnet" "public" {
   for_each                = var.public_subnet
-  availability_zone       = each.value["availability_zone"]
+  availability_zone_id    = each.value["availability_zone_id"]
   cidr_block              = each.value["cidr_block"]
   map_public_ip_on_launch = true
   tags = {
-    Infrastructure                            = var.identifier
-    Name                                      = "${var.identifier}-public-${each.key}"
-    "kubernetes.io/role/elb"                  = "1"
-    Tier                                      = "public"
+    Infrastructure           = var.identifier
+    Name                     = "${var.identifier}-public-${each.key}"
+    "kubernetes.io/role/elb" = "1"
+    Tier                     = "public"
   }
   vpc_id = aws_vpc.this.id
 }
