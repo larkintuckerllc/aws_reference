@@ -18,6 +18,8 @@ locals {
   subnet_ids         = concat(local.private_subnet_ids, local.public_subnet_ids)
 }
 
+data "aws_organizations_organization" "this" {}
+
 # VPC
 
 resource "aws_vpc" "this" {
@@ -168,4 +170,37 @@ resource "aws_network_acl" "this" {
     Name           = "${var.identifier}"
   }
   vpc_id = aws_vpc.this.id
+}
+
+# RESOURCE ACCESS MANAGER
+
+resource "aws_ram_resource_share" "this" {
+  allow_external_principals = false
+  name                      = "subnets"
+  tags = {
+    Infrastructure = var.identifier
+  }
+}
+
+resource "aws_ram_principal_association" "this" {
+  principal          = data.aws_organizations_organization.this.arn
+  resource_share_arn = aws_ram_resource_share.this.arn
+}
+
+resource "aws_ram_resource_association" "cluster" {
+  for_each           = var.cluster_subnet
+  resource_arn       = aws_subnet.cluster[each.key].arn
+  resource_share_arn = aws_ram_resource_share.this.arn
+}
+
+resource "aws_ram_resource_association" "private" {
+  for_each           = var.cluster_subnet
+  resource_arn       = aws_subnet.private[each.key].arn
+  resource_share_arn = aws_ram_resource_share.this.arn
+}
+
+resource "aws_ram_resource_association" "public" {
+  for_each           = var.cluster_subnet
+  resource_arn       = aws_subnet.public[each.key].arn
+  resource_share_arn = aws_ram_resource_share.this.arn
 }
