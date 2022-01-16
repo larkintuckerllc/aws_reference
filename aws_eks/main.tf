@@ -16,10 +16,6 @@ data "aws_vpc" "this" {
   cidr_block = var.vpc_cidr_block
 }
 
-data "aws_security_group" "this" {
-  name = var.security_group_name
-}
-
 data "aws_subnet" "cluster_0" {
   cidr_block = var.subnet_cluster_0_cidr_block
 }
@@ -139,10 +135,13 @@ resource "aws_security_group" "node_remote_access" {
 }
 
 resource "aws_security_group_rule" "node_remote_access_ingress" {
+  cidr_blocks = [
+    var.vpc_cidr_block,
+    var.vpc_secondary_cidr_block
+  ]
   from_port                = 22
   protocol                 = "tcp"
   security_group_id        = aws_security_group.node_remote_access.id
-  source_security_group_id = data.aws_security_group.this.id
   to_port                  = 22
   type                     = "ingress"
 }
