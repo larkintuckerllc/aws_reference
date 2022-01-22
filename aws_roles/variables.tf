@@ -10,6 +10,10 @@ variable oidc_provider {
   type = string
 }
 
+variable profile_bastion {
+  type = string
+}
+
 variable profile_clusters {
   type = string
 }
