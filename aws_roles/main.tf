@@ -9,18 +9,24 @@ terraform {
 }
 
 provider "aws" {
-  region = var.region
+  alias                   = "clusters"
+  profile                 = var.profile_clusters
+  region                  = var.region
+  shared_credentials_file = var.shared_credentials_file
 }
 
-data "aws_caller_identity" "this" {}
+data "aws_caller_identity" "clusters" {
+  provider = aws.clusters
+}
 
-data "aws_iam_policy_document" "cluster_account" {
+data "aws_iam_policy_document" "clusters" {
+  provider = aws.clusters
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
     principals {
       identifiers = [join(":", [
         "arn:aws:iam:",
-        data.aws_caller_identity.this.account_id,
+        data.aws_caller_identity.clusters.account_id,
         join("/",[
           "oidc-provider",
           var.oidc_provider
@@ -45,12 +51,13 @@ data "aws_iam_policy_document" "cluster_account" {
   }
 }
 
-resource "aws_iam_role" "cluster_account" {
-  assume_role_policy = data.aws_iam_policy_document.cluster_account.json
+resource "aws_iam_role" "clusters" {
+  assume_role_policy = data.aws_iam_policy_document.clusters.json
   name               = join("-", [
     var.namespace,
     "role"
   ])
+  provider = aws.clusters
   tags = {
     Infrastructure = var.identifier
   }
