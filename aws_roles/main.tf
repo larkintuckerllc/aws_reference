@@ -122,7 +122,13 @@ data "aws_iam_policy_document" "bastion_tenant" {
 }
 
 resource "aws_iam_policy" "bastion_tenant" {
-  provider = aws.clusters
   name   = "bastion-tenant"
   policy = data.aws_iam_policy_document.bastion_tenant.json
+  provider = aws.clusters
+}
+
+resource "aws_iam_role_policy_attachment" "bastion_tenant" {
+  policy_arn = aws_iam_policy.bastion_tenant.arn
+  provider   = aws.clusters
+  role       = aws_iam_role.clusters.name
 }
