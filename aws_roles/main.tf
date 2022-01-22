@@ -8,14 +8,12 @@ terraform {
   required_version = ">= 1.1.3"
 }
 
-/*
 provider "aws" {
   alias                   = "bastion"
   profile                 = var.profile_bastion
   region                  = var.region
   shared_credentials_file = var.shared_credentials_file
 }
-*/
 
 provider "aws" {
   alias                   = "clusters"
