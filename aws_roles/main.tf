@@ -22,9 +22,15 @@ provider "aws" {
   shared_credentials_file = var.shared_credentials_file
 }
 
+data "aws_caller_identity" "bastion" {
+  provider = aws.bastion
+}
+
 data "aws_caller_identity" "clusters" {
   provider = aws.clusters
 }
+
+# STEP 2
 
 data "aws_iam_policy_document" "clusters" {
   provider = aws.clusters
@@ -65,6 +71,31 @@ resource "aws_iam_role" "clusters" {
     "role"
   ])
   provider = aws.clusters
+  tags = {
+    Infrastructure = var.identifier
+  }
+}
+
+# STEP 5
+
+data "aws_iam_policy_document" "bastion" {
+  provider = aws.bastion
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      identifiers = [aws_iam_role.clusters.arn]
+      type        = "AWS"
+    }
+  }
+}
+
+resource "aws_iam_role" "bastion" {
+  assume_role_policy = data.aws_iam_policy_document.bastion.json
+  name               = join("-", [
+    var.namespace,
+    "t-role"
+  ])
+  provider = aws.bastion
   tags = {
     Infrastructure = var.identifier
   }
