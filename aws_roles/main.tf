@@ -35,7 +35,9 @@ data "aws_caller_identity" "clusters" {
 data "aws_iam_policy_document" "clusters" {
   provider = aws.clusters
   statement {
-    actions = ["sts:AssumeRoleWithWebIdentity"]
+    actions = [
+      "sts:AssumeRoleWithWebIdentity"
+    ]
     principals {
       identifiers = [join(":", [
         "arn:aws:iam:",
@@ -81,9 +83,13 @@ resource "aws_iam_role" "clusters" {
 data "aws_iam_policy_document" "bastion" {
   provider = aws.bastion
   statement {
-    actions = ["sts:AssumeRole"]
+    actions = [
+      "sts:AssumeRole"
+    ]
     principals {
-      identifiers = [aws_iam_role.clusters.arn]
+      identifiers = [
+        aws_iam_role.clusters.arn
+      ]
       type        = "AWS"
     }
   }
@@ -99,4 +105,24 @@ resource "aws_iam_role" "bastion" {
   tags = {
     Infrastructure = var.identifier
   }
+}
+
+# STEP 6
+
+data "aws_iam_policy_document" "bastion_tenant" {
+  provider = aws.clusters
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    resources = [
+      aws_iam_role.bastion.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "bastion_tenant" {
+  provider = aws.clusters
+  name   = "bastion-tenant"
+  policy = data.aws_iam_policy_document.bastion_tenant.json
 }
